@@ -18,7 +18,7 @@ class ImageListCreateView(APIView):
             .filter(uploaded_by=request.user)
             .prefetch_related('polygons')
         )
-        return Response(AnnotationImageSerializer(images, many=True).data)
+        return Response(AnnotationImageSerializer(images, many=True, context={'request': request}).data)
 
     def post(self, request):
         file = request.FILES.get('file')
@@ -33,7 +33,7 @@ class ImageListCreateView(APIView):
             uploaded_by=request.user,
         )
         return Response(
-            AnnotationImageSerializer(image).data,
+            AnnotationImageSerializer(image, context={'request': request}).data,
             status=status.HTTP_201_CREATED,
         )
 
@@ -43,7 +43,7 @@ class ImageDetailView(APIView):
 
     def get(self, request, pk):
         image = get_object_or_404(AnnotationImage, pk=pk, uploaded_by=request.user)
-        return Response(AnnotationImageSerializer(image).data)
+        return Response(AnnotationImageSerializer(image, context={'request': request}).data)
 
     def delete(self, request, pk):
         image = get_object_or_404(AnnotationImage, pk=pk, uploaded_by=request.user)
